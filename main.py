@@ -18,11 +18,12 @@ PHYSICALHEIGHT = 111
 def printImg(fileStream,printType):
 
     # 小票
-    if printType == 'XP': 
+    if (printType == 'XP' or printType == 'ZYD' or printType == 'YXD' 
+        or printType == 'WCLQD' or printType == 'CXZYD'  or printType == 'FKZLD'): 
         printerName = 'XP-80C' # 直连的打印机
     # 检验条形码 可能需要设置打印机首选项的纸张大小
     elif printType == 'JY':
-        printerName = r'\\192.168.1.111\TSC TTP-244 Pro'  # 可以用别人共享的打印机
+        printerName = r'\\192.168.1.111\TSC TTP-244 Pro'  # 别人共享的打印机
 
     hDC = win32ui.CreateDC ()
     hDC.CreatePrinterDC (printerName)
@@ -49,9 +50,10 @@ def printImg(fileStream,printType):
     x2 = x1 + scaled_width
     y2 = y1 + scaled_height
     # dib.draw (hDC.GetHandleOutput (), (x1, y1, x2, y2))
-    if printType == 'XP': 
+    if (printType == 'XP' or printType == 'ZYD' or printType == 'YXD' 
+        or printType == 'WCLQD' or printType == 'CXZYD' or printType == 'FKZLD'):
         dib.draw (hDC.GetHandleOutput (), (x1, 0, x2, 0+scaled_height))
-    elif printType == 'JY':
+    elif printType == 'JY' :
         dib.draw (hDC.GetHandleOutput (), (0, 0, 440, 232))
     
     hDC.EndPage ()
@@ -61,7 +63,6 @@ def printImg(fileStream,printType):
 
 app = Flask(__name__)
 # 可能需要禁用浏览器的Block insecure private network requests才能跨域请求.
-# 应该填写服务器的IP,或者允许所有IP访问
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
 # CORS(app)
 
