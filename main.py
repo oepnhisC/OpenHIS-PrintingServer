@@ -24,11 +24,12 @@ def printImg(fileStream,printType):
     # 检验条形码 可能需要设置打印机首选项的纸张大小
     elif printType == 'JY':
         printerName = r'\\192.168.1.111\TSC TTP-244 Pro'  # 别人共享的打印机
+    elif printType == 'FP':
+        printerName = r'\\192.168.1.111\HP LaserJet 1020'  
 
     hDC = win32ui.CreateDC ()
     hDC.CreatePrinterDC (printerName)
     printable_area = hDC.GetDeviceCaps (HORZRES), hDC.GetDeviceCaps (VERTRES)
-    printer_size = hDC.GetDeviceCaps (PHYSICALWIDTH), hDC.GetDeviceCaps (PHYSICALHEIGHT)
     bmp = Image.open (fileStream)
     # if bmp.size[0] > bmp.size[1]:
     #  bmp = bmp.rotate (90)
@@ -37,7 +38,6 @@ def printImg(fileStream,printType):
     scale = min (ratios)
     
     print(printable_area)
-    print(printer_size)
     print(bmp.size)
 
     hDC.StartDoc ('自助机打印')
@@ -45,16 +45,18 @@ def printImg(fileStream,printType):
 
     dib = ImageWin.Dib (bmp)
     scaled_width, scaled_height = [int (scale * i) for i in bmp.size]
-    x1 = int ((printer_size[0] - scaled_width) / 2)
-    y1 = int ((printer_size[1] - scaled_height) / 2)
+    x1 = int ((printable_area[0] - scaled_width) / 2)
+    y1 = int ((printable_area[1] - scaled_height) / 2)
     x2 = x1 + scaled_width
     y2 = y1 + scaled_height
     # dib.draw (hDC.GetHandleOutput (), (x1, y1, x2, y2))
     if (printType == 'XP' or printType == 'ZYD' or printType == 'YXD' 
         or printType == 'WCLQD' or printType == 'CXZYD' or printType == 'FKZLD'):
-        dib.draw (hDC.GetHandleOutput (), (x1, 0, x2, 0+scaled_height))
+        dib.draw (hDC.GetHandleOutput (), (x1, 0, x2, scaled_height))
     elif printType == 'JY' :
         dib.draw (hDC.GetHandleOutput (), (0, 0, 440, 232))
+    elif printType == 'FP':
+        dib.draw (hDC.GetHandleOutput (), (x1, 0, x2, scaled_height))
     
     hDC.EndPage ()
     hDC.EndDoc ()
